@@ -11,7 +11,7 @@ namespace SDCorpComm.Models
 
         public List<Dispositivo> dispositivos { get; private set; } = new List<Dispositivo>();
         public List<Mensagem> mensagensNaoProcessadas = new List<Mensagem>();
-        public List<string> mensagensProcessadas = new List<string>();
+        public List<Mensagem> mensagensProcessadas = new List<Mensagem>();
         public List<int> relogio = new List<int>();
 
         public string nome { get; private set; }
@@ -23,20 +23,27 @@ namespace SDCorpComm.Models
             id = quantidade++;
         }
 
+        private void IncrementarRelogio(int remetente)
+        {
+
+            relogio[remetente]++;
+            
+        }
+
         private void ProcessarMensagem(Mensagem mensagem)
         {
-            mensagensProcessadas.Add(mensagem.mensagem);
-            relogio[mensagem.remetente]++;
+            mensagensProcessadas.Add(mensagem);
+            IncrementarRelogio(mensagem.remetente);
             foreach(var dispositivo in dispositivos)
             {
-                dispositivo.ProcessarMensagem(mensagem.mensagem);
+                dispositivo.ProcessarMensagem(mensagem);
                 
             }
 
             ProcessarFila();
         }
 
-        public void ProcessarFila()
+        private void ProcessarFila()
         {
 
             foreach (var msg in mensagensNaoProcessadas.ToList())
@@ -60,8 +67,18 @@ namespace SDCorpComm.Models
 
         }
 
+        private void CompletarRelogio(int numPonteiros)
+        {
+            for (int i = relogio.Count; i < numPonteiros; i++)
+            {
+                relogio.Add(0);
+            }
+        }
+
         public void ReceberMensagem(Mensagem mensagem)
         {
+
+            CompletarRelogio(mensagem.relogio.Count);
             if (mensagem.MensagemPodeSerProcessada(relogio))
             {
                 ProcessarMensagem(mensagem);

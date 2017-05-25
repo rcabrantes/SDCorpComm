@@ -13,7 +13,7 @@ namespace SDCorpComm.Models
         public int id { get;private set;}
         public Usuario usuario { get; private set; }
 
-        private Dictionary<int,string> filaMensagens = new Dictionary<int,string>();
+        private Dictionary<int,Mensagem> filaMensagens = new Dictionary<int,Mensagem>();
 
         public Dispositivo(Usuario _usuario)
         {
@@ -21,12 +21,12 @@ namespace SDCorpComm.Models
             id = quantidade++;
         }
 
-        public void ProcessarMensagem(string mensagem)
+        public void ProcessarMensagem(Mensagem mensagem)
         {
-            filaMensagens.Add(contadorMensagens++,mensagem);
+                filaMensagens.Add(contadorMensagens++,mensagem);
         }
 
-        public void ProcessarMensagens(List<string> mensagens)
+        public void ProcessarMensagens(List<Mensagem> mensagens)
         {
             foreach(var msg in mensagens)
             {
@@ -34,9 +34,9 @@ namespace SDCorpComm.Models
             }
         }
 
-        public Dictionary<int,string> MensagensNaFila()
+        public Dictionary<int,Mensagem> MensagensNaFila()
         {
-            var mensagens = new Dictionary<int, string>();
+            var mensagens = new Dictionary<int, Mensagem>();
             foreach(var key in filaMensagens.Keys)
             {
                 mensagens.Add(key, filaMensagens[key]);

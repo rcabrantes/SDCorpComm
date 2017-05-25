@@ -96,7 +96,8 @@
     <Compile Include="Integration\UsersIntegrationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
-    <Compile Include="Users\UserTest.cs" />
+    <Compile Include="Unit\TestesDispositivos.cs" />
+    <Compile Include="Unit\UserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
