@@ -79,9 +79,10 @@ namespace Cliente.Formularios
                 }
                 else
                 {
-                    var principal = new Principal();
                     var dados = (JObject)JsonConvert.DeserializeObject(mensagem);
                     SalvarDados(dados);
+
+                    var principal = new Principal();
                     principal.Visible = true;
                     principal.Show();
                     this.Hide();

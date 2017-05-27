@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
@@ -41,6 +43,12 @@
             this.splitContainer1.Size = new System.Drawing.Size(657, 584);
             this.splitContainer1.SplitterDistance = 219;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Principal
             // 
@@ -59,5 +67,6 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Timer timer1;
     }
 }

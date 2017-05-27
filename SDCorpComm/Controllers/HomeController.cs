@@ -10,7 +10,7 @@ namespace SDCorpComm.Controllers
 {
     public class HomeController : Controller
     {
-        public static List<Usuario> usuarios = new List<Usuario>();
+        public static List<Usuario> usuarios = new List<Usuario> { new Usuario("beca", "asdf"),new Usuario("rere","asdf") };
 
         // GET: Home
         public ActionResult Hello()

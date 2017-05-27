@@ -13,6 +13,6 @@ namespace Cliente
         public static string UsuarioNome { get; set; }
         public static int dispositivoID { get; set; }
 
-        public static List<string> usuarios { get; set; }
+        public static List<string> usuarios { get; set; } = new List<string>();
     }
 }
