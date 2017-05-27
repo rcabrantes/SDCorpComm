@@ -26,7 +26,7 @@ namespace SDCorpComm.Tests.Controllers
         [TestMethod]
         public void NovoUsuario_TemNomeFornecido()
         {
-            var usuario = new Usuario("User 1");
+            var usuario = new Usuario("User 1","senha");
 
             var resultado = usuario.nome;
 
@@ -37,8 +37,8 @@ namespace SDCorpComm.Tests.Controllers
         [TestMethod]
         public void NovoUsuario_TemID_MaiorQueOAnterior()
         {
-            var usuario = new Usuario("User 1");
-            var usuario2 = new Usuario("User 2");
+            var usuario = new Usuario("User 1","senha");
+            var usuario2 = new Usuario("User 2", "senha");
 
             var resultado = usuario.id;
             var resultado2 = usuario2.id;
@@ -51,7 +51,7 @@ namespace SDCorpComm.Tests.Controllers
         [TestMethod]
         public void Usuario_RecebeMensagemNaOrdem_ProcessaMensagem()
         {
-            var usuario = new Usuario("User 1");
+            var usuario = new Usuario("User 1", "senha");
 
             usuario.ReceberMensagem(mensagem);
 
@@ -63,7 +63,7 @@ namespace SDCorpComm.Tests.Controllers
         [TestMethod]
         public void Usuario_RecebeMensagemForaDeOrdem_NaoProcessa()
         {
-            var usuario = new Usuario("User 1");
+            var usuario = new Usuario("User 1", "senha");
 
             usuario.ReceberMensagem(mensagem2);
 
@@ -75,7 +75,7 @@ namespace SDCorpComm.Tests.Controllers
         [TestMethod]
         public void Usuario_RecebeMensagemForaDeOrdem_ProcessaNaOrdem()
         {
-            var usuario = new Usuario("User 1");
+            var usuario = new Usuario("User 1", "senha");
 
             usuario.ReceberMensagem(mensagem2);
 

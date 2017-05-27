@@ -11,7 +11,7 @@ namespace SDCorpComm.Tests.Integration
         [TestMethod]
         public void Usuario_RecebeMensagem_EnviaParaDispositivo()
         {
-            var usuario = new Usuario("Usuario 1");
+            var usuario = new Usuario("Usuario 1","senha");
             var dispositivo = new Dispositivo(usuario);
 
             usuario.AdicionarDispositivo(dispositivo);

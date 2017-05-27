@@ -18,7 +18,7 @@ namespace SDCorpComm.Tests.Unit
         [TestInitialize]
         public void Init()
         {
-            user= new Usuario("Usuario qualquer");
+            user= new Usuario("Usuario qualquer","senha");
             mensagem = new Mensagem(new List<int> { 0, 0, 0 }, "Mensagem", 0);
         }
 

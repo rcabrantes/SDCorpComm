@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SDCorpComm.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,22 +10,73 @@ namespace SDCorpComm.Controllers
 {
     public class HomeController : Controller
     {
+        public static List<Usuario> usuarios = new List<Usuario>();
+
         // GET: Home
         public ActionResult Hello()
         {
             return Content("Hello back");
         }
 
+
+        private bool Autenticar(string usuario,string senha)
+        {
+            return (usuarios.Exists(c => c.nome == usuario && c.senha == senha));
+
+        }
+
+        private Usuario EncotnrarUsuario(string usuario,string senha)
+        {
+            return usuarios.FirstOrDefault(c => c.nome == usuario && c.senha == senha);
+        }
+
+
+        private bool AutenticarAdmin(string usuario,string senha)
+        {
+            if (usuario == "rsinohara" && senha == "asdf")
+            {
+                return true;
+            }
+
+            return false;
+        }
         // GET: Home/Details/5
         public ActionResult Login(string usuario,string senha)
         {
-            if(usuario=="rsinohara" && senha == "asdf")
+            if (AutenticarAdmin(usuario,senha))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            } else
+                return Content("Admin");
+            }
+            else if (Autenticar(usuario, senha))
+            {
+                var usuarioAtual = EncotnrarUsuario(usuario, senha);
+                var dispositivo = new Dispositivo(usuarioAtual);
+
+                usuarioAtual.AdicionarDispositivo(dispositivo);
+
+                return Json(new {
+                    dispositivo = dispositivo.id,
+                    usuarios = usuarios.Select(c => c.nome)
+                });
+            }
+            else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                
             }
+        }
+
+        public ActionResult Novo(string adminUsuario, string adminSenha,string novoNome, string novoSenha)
+        {
+            if (!AutenticarAdmin(adminUsuario, adminSenha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var novoUsuario = new Usuario(novoNome, novoSenha);
+            usuarios.Add(novoUsuario);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // GET: Home/Create

@@ -10,6 +10,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Cliente.Formularios
 {
@@ -68,12 +71,66 @@ namespace Cliente.Formularios
 
             if (resposta.IsSuccessStatusCode)
             {
-                var principal = new Principal();
-                principal.Visible = true;
-                principal.Show();
-                this.Close();
+                var mensagem= await resposta.Content.ReadAsStringAsync();
+                if (mensagem == "Admin")
+                {
+                    pnlAdmin.Visible = true;
+                    pnlLogin.Visible = false;
+                }
+                else
+                {
+                    var principal = new Principal();
+                    var dados = (JObject)JsonConvert.DeserializeObject(mensagem);
+                    SalvarDados(dados);
+                    principal.Visible = true;
+                    principal.Show();
+                    this.Hide();
+                }
             }
 
+        }
+
+        public void SalvarDados(JObject dados)  
+        {
+            Global.dispositivoID = int.Parse(dados["dispositivo"].ToString());
+            var usuariosJson = JArray.Parse(dados["usuarios"].ToString());
+            Global.usuarios = new List<string>();
+            foreach (var usuario in usuariosJson)
+            {
+                Global.usuarios.Add(usuario.ToString());
+            }
+
+        }
+
+        private async void btnCriarUsuario_Click(object sender, EventArgs e)
+        {
+            string url = "http://localhost:48502/home/novo";
+
+            if (txtAdminSenha.Text != txtAdminSenha2.Text)
+            {
+                MessageBox.Show("Senhas nao batem");
+                return;
+            }
+
+            var valores = new Dictionary<string, string>
+            {
+                {"adminUsuario",txtNome.Text },
+                {"adminSenha",txtSenha.Text },
+                {"novoNome" ,txtAdminNome.Text},
+                {"novoSenha",txtAdminSenha.Text }
+            };
+
+            var conteudo = new FormUrlEncodedContent(valores);
+
+
+            var resposta = await client.PostAsync(url, conteudo);
+
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                pnlAdmin.Visible = false;
+                pnlLogin.Visible = true;
+            }
         }
     }
 }

@@ -14,12 +14,15 @@ namespace SDCorpComm.Models
         public List<Mensagem> mensagensProcessadas = new List<Mensagem>();
         public List<int> relogio = new List<int>();
 
+        public string senha { get; private set; }
+
         public string nome { get; private set; }
         public int id { get; private set; }
 
-        public Usuario(string _nome)
+        public Usuario(string _nome, string _senha)
         {
             nome = _nome;
+            senha = _senha;
             id = quantidade++;
         }
 

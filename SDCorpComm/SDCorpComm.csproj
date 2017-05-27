@@ -163,7 +163,7 @@
     </Compile>
     <Compile Include="Models\Dispositivo.cs" />
     <Compile Include="Models\Mensagem.cs" />
-    <Compile Include="Models\Usiario.cs" />
+    <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
