@@ -34,12 +34,12 @@ namespace SDCorpComm.Models
             }
         }
 
-        public Dictionary<int,Mensagem> MensagensNaFila()
+        public Dictionary<string,Mensagem> MensagensNaFila()
         {
-            var mensagens = new Dictionary<int, Mensagem>();
+            var mensagens = new Dictionary<string, Mensagem>();
             foreach(var key in filaMensagens.Keys)
             {
-                mensagens.Add(key, filaMensagens[key]);
+                mensagens.Add(key.ToString(), filaMensagens[key]);
             }
 
             return mensagens;

@@ -96,6 +96,8 @@ namespace Cliente.Formularios
             Global.dispositivoID = int.Parse(dados["dispositivo"].ToString());
             var usuariosJson = JArray.Parse(dados["usuarios"].ToString());
             Global.usuarios = new List<string>();
+            Global.UsuarioNome = txtNome.Text;
+            Global.UsuarioSenha = txtSenha.Text;
             foreach (var usuario in usuariosJson)
             {
                 Global.usuarios.Add(usuario.ToString());

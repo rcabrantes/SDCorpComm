@@ -25,9 +25,9 @@ namespace SDCorpComm.Controllers
 
         }
 
-        private Usuario EncotnrarUsuario(string usuario,string senha)
+        private Usuario EncotnrarUsuario(string usuario)
         {
-            return usuarios.FirstOrDefault(c => c.nome == usuario && c.senha == senha);
+            return usuarios.FirstOrDefault(c => c.nome == usuario);
         }
 
 
@@ -40,7 +40,8 @@ namespace SDCorpComm.Controllers
 
             return false;
         }
-        // GET: Home/Details/5
+
+
         public ActionResult Login(string usuario,string senha)
         {
             if (AutenticarAdmin(usuario,senha))
@@ -49,7 +50,7 @@ namespace SDCorpComm.Controllers
             }
             else if (Autenticar(usuario, senha))
             {
-                var usuarioAtual = EncotnrarUsuario(usuario, senha);
+                var usuarioAtual = EncotnrarUsuario(usuario);
                 var dispositivo = new Dispositivo(usuarioAtual);
 
                 usuarioAtual.AdicionarDispositivo(dispositivo);
@@ -79,70 +80,83 @@ namespace SDCorpComm.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        // GET: Home/Create
-        public ActionResult Create()
+
+
+        public ActionResult Usuarios(string usuario, string senha)
         {
-            return View();
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            return Json(usuarios.Select(c => c.nome));
+        }
+        
+        public ActionResult EnviarUnico(string mensagem, string remetente,string destinatario,string usuario, string senha)
+        {
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+            var msg = new Mensagem(mensagem, remetente, destinatario);
+
+            var usuarioDestino = EncotnrarUsuario(destinatario);
+            var usuarioRemetente = EncotnrarUsuario(remetente);
+
+            if(usuarioDestino==null && usuarioRemetente == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            }
+
+            usuarioRemetente.ReceberMensagem(msg);
+            usuarioDestino.ReceberMensagem(msg);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+
         }
 
-        // POST: Home/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult ReceberMensagens(string dispositivo,string usuario, string senha)
         {
-            try
+            if (!Autenticar(usuario, senha))
             {
-                // TODO: Add insert logic here
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
 
-                return RedirectToAction("Index");
-            }
-            catch
+            var disp = EncotnrarUsuario(usuario).dispositivos.Where(c => c.id.ToString() == dispositivo).FirstOrDefault();
+
+            if (disp == null)
             {
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
             }
+
+            var mensagens = disp.MensagensNaFila();
+            var result = Json(mensagens);
+            return result;
         }
 
-        // GET: Home/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Acks(string usuario, string senha, string dispositivo,string acks)
         {
-            return View();
-        }
-
-        // POST: Home/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            if (!Autenticar(usuario, senha))
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
-            catch
+
+            var disp = EncotnrarUsuario(usuario).dispositivos.Where(c => c.id.ToString() == dispositivo).FirstOrDefault();
+
+            if (disp == null)
             {
-                return View();
-            }
-        }
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
-        // GET: Home/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Home/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+
+            var ackLista = acks.Split(',').ToList();
+            disp.ProcessarAcks(ackLista.Select(c=>int.Parse(c)));
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
         }
     }
 }
