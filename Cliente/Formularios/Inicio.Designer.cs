@@ -35,13 +35,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlAdmin = new System.Windows.Forms.Panel();
-            this.btnCriarUsuario = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtAdminNome = new System.Windows.Forms.TextBox();
-            this.txtAdminSenha = new System.Windows.Forms.TextBox();
             this.txtAdminSenha2 = new System.Windows.Forms.TextBox();
+            this.txtAdminSenha = new System.Windows.Forms.TextBox();
+            this.txtAdminNome = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btnCriarUsuario = new System.Windows.Forms.Button();
             this.pnlLogin.SuspendLayout();
             this.pnlAdmin.SuspendLayout();
             this.SuspendLayout();
@@ -118,34 +118,28 @@
             this.pnlAdmin.Size = new System.Drawing.Size(470, 146);
             this.pnlAdmin.TabIndex = 1;
             this.pnlAdmin.Visible = false;
+            this.pnlAdmin.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlAdmin_Paint);
             // 
-            // btnCriarUsuario
+            // txtAdminSenha2
             // 
-            this.btnCriarUsuario.Location = new System.Drawing.Point(269, 30);
-            this.btnCriarUsuario.Name = "btnCriarUsuario";
-            this.btnCriarUsuario.Size = new System.Drawing.Size(126, 23);
-            this.btnCriarUsuario.TabIndex = 0;
-            this.btnCriarUsuario.Text = "Cadastrar usuario";
-            this.btnCriarUsuario.UseVisualStyleBackColor = true;
-            this.btnCriarUsuario.Click += new System.EventHandler(this.btnCriarUsuario_Click);
+            this.txtAdminSenha2.Location = new System.Drawing.Point(120, 88);
+            this.txtAdminSenha2.Name = "txtAdminSenha2";
+            this.txtAdminSenha2.Size = new System.Drawing.Size(100, 20);
+            this.txtAdminSenha2.TabIndex = 6;
             // 
-            // label3
+            // txtAdminSenha
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(67, 35);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Nome:";
+            this.txtAdminSenha.Location = new System.Drawing.Point(120, 58);
+            this.txtAdminSenha.Name = "txtAdminSenha";
+            this.txtAdminSenha.Size = new System.Drawing.Size(100, 20);
+            this.txtAdminSenha.TabIndex = 5;
             // 
-            // label4
+            // txtAdminNome
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(67, 61);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "Senha:";
+            this.txtAdminNome.Location = new System.Drawing.Point(120, 32);
+            this.txtAdminNome.Name = "txtAdminNome";
+            this.txtAdminNome.Size = new System.Drawing.Size(100, 20);
+            this.txtAdminNome.TabIndex = 4;
             // 
             // label5
             // 
@@ -156,26 +150,33 @@
             this.label5.TabIndex = 3;
             this.label5.Text = "Repetir senha";
             // 
-            // txtAdminNome
+            // label4
             // 
-            this.txtAdminNome.Location = new System.Drawing.Point(120, 32);
-            this.txtAdminNome.Name = "txtAdminNome";
-            this.txtAdminNome.Size = new System.Drawing.Size(100, 20);
-            this.txtAdminNome.TabIndex = 4;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(67, 61);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 13);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "Senha:";
             // 
-            // txtAdminSenha
+            // label3
             // 
-            this.txtAdminSenha.Location = new System.Drawing.Point(120, 58);
-            this.txtAdminSenha.Name = "txtAdminSenha";
-            this.txtAdminSenha.Size = new System.Drawing.Size(100, 20);
-            this.txtAdminSenha.TabIndex = 5;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(67, 35);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Nome:";
             // 
-            // txtAdminSenha2
+            // btnCriarUsuario
             // 
-            this.txtAdminSenha2.Location = new System.Drawing.Point(120, 88);
-            this.txtAdminSenha2.Name = "txtAdminSenha2";
-            this.txtAdminSenha2.Size = new System.Drawing.Size(100, 20);
-            this.txtAdminSenha2.TabIndex = 6;
+            this.btnCriarUsuario.Location = new System.Drawing.Point(269, 30);
+            this.btnCriarUsuario.Name = "btnCriarUsuario";
+            this.btnCriarUsuario.Size = new System.Drawing.Size(126, 23);
+            this.btnCriarUsuario.TabIndex = 0;
+            this.btnCriarUsuario.Text = "Cadastrar usuario";
+            this.btnCriarUsuario.UseVisualStyleBackColor = true;
+            this.btnCriarUsuario.Click += new System.EventHandler(this.btnCriarUsuario_Click);
             // 
             // Inicio
             // 

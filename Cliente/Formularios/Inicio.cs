@@ -26,7 +26,7 @@ namespace Cliente.Formularios
             InitializeComponent();
         }
 
-        private void Inicio_Load(object sender, EventArgs e)
+        private void Inicializar()
         {
             string url = Global.Domain + "hello";
 
@@ -45,19 +45,24 @@ namespace Cliente.Formularios
             }
             catch
             {
-                //Exibir mensagem de erro e alteracao de IP
-
+                Global.Domain = "http://www.rsinohara.com/home/";
+                Inicializar();
                 return;
             }
 
             pnlLogin.Visible = true;
+        }
+
+        private void Inicio_Load(object sender, EventArgs e)
+        {
+            Inicializar();
 
 
         }
 
         private async void btnConectar_Click(object sender, EventArgs e)
         {
-            string url = "http://localhost:48502/home/login";
+            string url = Global.Domain+"login";
 
             var valores = new Dictionary<string, string>
             {
@@ -107,7 +112,7 @@ namespace Cliente.Formularios
 
         private async void btnCriarUsuario_Click(object sender, EventArgs e)
         {
-            string url = "http://localhost:48502/home/novo";
+            string url = Global.Domain + "novo";
 
             if (txtAdminSenha.Text != txtAdminSenha2.Text)
             {
@@ -134,6 +139,11 @@ namespace Cliente.Formularios
                 pnlAdmin.Visible = false;
                 pnlLogin.Visible = true;
             }
+        }
+
+        private void pnlAdmin_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Cliente.Formularios
 
         private async void SincronizarUsuarios()
         {
-            string url = "http://localhost:48502/home/usuarios";
+            string url = Global.Domain + "usuarios";
 
             var valores = new Dictionary<string, string>
             {
@@ -136,7 +136,7 @@ namespace Cliente.Formularios
         }
         private async void LerMensagens()
         {
-            string url = "http://localhost:48502/home/receberMensagens";
+            string url = Global.Domain + "receberMensagens";
 
             var valores = new Dictionary<string, string>
             {
@@ -180,7 +180,7 @@ namespace Cliente.Formularios
                 }
 
 
-                string url = "http://localhost:48502/home/acks";
+                string url = Global.Domain + "acks";
 
                 var valores = new Dictionary<string, string>{
                     {"dispositivo",Global.dispositivoID.ToString() },
