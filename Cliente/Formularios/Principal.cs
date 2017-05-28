@@ -28,7 +28,7 @@ namespace Cliente.Formularios
             set
             {
                 _destinatarioAtual = value;
-                lblDestinatario.Text += "Exibindo: " + _destinatarioAtual == "" ? "nenhum." : _destinatarioAtual;
+                lblDestinatario.Text = "Exibindo: " + (_destinatarioAtual == "" ? "nenhum." : _destinatarioAtual);
             }
         }
         private bool EnviarParaGrupo = false;
