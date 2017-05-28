@@ -156,6 +156,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\Grupo.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -167,6 +168,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Cliente\publish\publish.htm">
+      <Link>publish.htm</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\setup.exe">
+      <Link>setup.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -194,6 +203,31 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="..\Cliente\publish\Application Files\Cliente_1_0_0_0\Cliente.application">
+      <Link>Application Files\Cliente_1_0_0_0\Cliente.application</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\Application Files\Cliente_1_0_0_0\Cliente.exe.config.deploy">
+      <Link>Application Files\Cliente_1_0_0_0\Cliente.exe.config.deploy</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\Application Files\Cliente_1_0_0_0\Cliente.exe.deploy">
+      <Link>Application Files\Cliente_1_0_0_0\Cliente.exe.deploy</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\Application Files\Cliente_1_0_0_0\Cliente.exe.manifest">
+      <Link>Application Files\Cliente_1_0_0_0\Cliente.exe.manifest</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\Application Files\Cliente_1_0_0_0\Newtonsoft.Json.dll.deploy">
+      <Link>Application Files\Cliente_1_0_0_0\Newtonsoft.Json.dll.deploy</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Cliente\publish\Cliente.application">
+      <Link>Cliente.application</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\PublishProfiles\rsinohara.com - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -226,6 +260,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <PropertyGroup>
+    <IncludeSetACLProviderOnDestination>False</IncludeSetACLProviderOnDestination>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>

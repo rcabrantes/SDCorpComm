@@ -30,12 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.btnCriarGrupo = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.txtMensagem = new System.Windows.Forms.TextBox();
-            this.btnEnviar = new System.Windows.Forms.Button();
+            this.lblDestinatario = new System.Windows.Forms.Label();
             this.txtHistorico = new System.Windows.Forms.TextBox();
+            this.btnEnviar = new System.Windows.Forms.Button();
+            this.txtMensagem = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -51,6 +54,10 @@
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.btnCriarGrupo);
+            // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
@@ -58,11 +65,16 @@
             this.splitContainer1.SplitterDistance = 177;
             this.splitContainer1.TabIndex = 0;
             // 
-            // timer1
+            // btnCriarGrupo
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.btnCriarGrupo.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnCriarGrupo.Location = new System.Drawing.Point(0, 559);
+            this.btnCriarGrupo.Name = "btnCriarGrupo";
+            this.btnCriarGrupo.Size = new System.Drawing.Size(175, 23);
+            this.btnCriarGrupo.TabIndex = 0;
+            this.btnCriarGrupo.Text = "Criar Grupo";
+            this.btnCriarGrupo.UseVisualStyleBackColor = true;
+            this.btnCriarGrupo.Click += new System.EventHandler(this.btnCriarGrupo_Click);
             // 
             // splitContainer2
             // 
@@ -73,6 +85,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.lblDestinatario);
             this.splitContainer2.Panel1.Controls.Add(this.txtHistorico);
             // 
             // splitContainer2.Panel2
@@ -83,14 +96,25 @@
             this.splitContainer2.SplitterDistance = 521;
             this.splitContainer2.TabIndex = 0;
             // 
-            // txtMensagem
+            // lblDestinatario
             // 
-            this.txtMensagem.Dock = System.Windows.Forms.DockStyle.Left;
-            this.txtMensagem.Location = new System.Drawing.Point(0, 0);
-            this.txtMensagem.Multiline = true;
-            this.txtMensagem.Name = "txtMensagem";
-            this.txtMensagem.Size = new System.Drawing.Size(357, 57);
-            this.txtMensagem.TabIndex = 0;
+            this.lblDestinatario.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblDestinatario.Location = new System.Drawing.Point(0, 0);
+            this.lblDestinatario.Name = "lblDestinatario";
+            this.lblDestinatario.Size = new System.Drawing.Size(474, 34);
+            this.lblDestinatario.TabIndex = 3;
+            this.lblDestinatario.Text = "Exibindo: nenhum";
+            this.lblDestinatario.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // txtHistorico
+            // 
+            this.txtHistorico.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtHistorico.Location = new System.Drawing.Point(0, 37);
+            this.txtHistorico.Multiline = true;
+            this.txtHistorico.Name = "txtHistorico";
+            this.txtHistorico.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtHistorico.Size = new System.Drawing.Size(474, 484);
+            this.txtHistorico.TabIndex = 2;
             // 
             // btnEnviar
             // 
@@ -103,15 +127,20 @@
             this.btnEnviar.UseVisualStyleBackColor = true;
             this.btnEnviar.Click += new System.EventHandler(this.btnEnviar_Click);
             // 
-            // txtHistorico
+            // txtMensagem
             // 
-            this.txtHistorico.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtHistorico.Location = new System.Drawing.Point(0, 0);
-            this.txtHistorico.Multiline = true;
-            this.txtHistorico.Name = "txtHistorico";
-            this.txtHistorico.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtHistorico.Size = new System.Drawing.Size(474, 521);
-            this.txtHistorico.TabIndex = 2;
+            this.txtMensagem.Dock = System.Windows.Forms.DockStyle.Left;
+            this.txtMensagem.Location = new System.Drawing.Point(0, 0);
+            this.txtMensagem.Multiline = true;
+            this.txtMensagem.Name = "txtMensagem";
+            this.txtMensagem.Size = new System.Drawing.Size(357, 57);
+            this.txtMensagem.TabIndex = 0;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Principal
             // 
@@ -121,6 +150,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Name = "Principal";
             this.Text = "Principal";
+            this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -142,5 +172,7 @@
         private System.Windows.Forms.TextBox txtHistorico;
         private System.Windows.Forms.Button btnEnviar;
         private System.Windows.Forms.TextBox txtMensagem;
+        private System.Windows.Forms.Button btnCriarGrupo;
+        private System.Windows.Forms.Label lblDestinatario;
     }
 }

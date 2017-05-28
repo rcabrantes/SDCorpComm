@@ -28,7 +28,7 @@ namespace Cliente.Formularios
 
         private void Inicio_Load(object sender, EventArgs e)
         {
-            string url = "http://localhost:48502/home/hello";
+            string url = Global.Domain + "hello";
 
             var request = WebRequest.Create(url);
             string result;
@@ -71,7 +71,7 @@ namespace Cliente.Formularios
 
             if (resposta.IsSuccessStatusCode)
             {
-                var mensagem= await resposta.Content.ReadAsStringAsync();
+                var mensagem = await resposta.Content.ReadAsStringAsync();
                 if (mensagem == "Admin")
                 {
                     pnlAdmin.Visible = true;
@@ -91,7 +91,7 @@ namespace Cliente.Formularios
 
         }
 
-        public void SalvarDados(JObject dados)  
+        public void SalvarDados(JObject dados)
         {
             Global.dispositivoID = int.Parse(dados["dispositivo"].ToString());
             var usuariosJson = JArray.Parse(dados["usuarios"].ToString());

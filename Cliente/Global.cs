@@ -8,7 +8,7 @@ namespace Cliente
 {
     public static class Global
     {
-        public static string Domain { get; set; }
+        public static string Domain { get; set; } = "http://localhost:48502/home/";
         public static string UsuarioSenha { get; set; }
         public static string UsuarioNome { get; set; }
         public static int dispositivoID { get; set; }

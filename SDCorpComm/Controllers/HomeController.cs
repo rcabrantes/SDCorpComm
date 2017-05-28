@@ -11,6 +11,7 @@ namespace SDCorpComm.Controllers
     public class HomeController : Controller
     {
         public static List<Usuario> usuarios = new List<Usuario> { new Usuario("beca", "asdf"),new Usuario("rere","asdf") };
+        public static List<Grupo> grupos = new List<Grupo>();
 
         // GET: Home
         public ActionResult Hello()
@@ -103,7 +104,7 @@ namespace SDCorpComm.Controllers
             var usuarioDestino = EncotnrarUsuario(destinatario);
             var usuarioRemetente = EncotnrarUsuario(remetente);
 
-            if(usuarioDestino==null && usuarioRemetente == null)
+            if(usuarioDestino==null || usuarioRemetente == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
@@ -158,5 +159,97 @@ namespace SDCorpComm.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
 
         }
+
+        public ActionResult IngressarGrupo(string usuario,string senha, string nomeGrupo)
+        {
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            Grupo grupo;
+            if (grupos.Exists(c => c.nome == nomeGrupo))
+            {
+                grupo = grupos.FirstOrDefault(c => c.nome == nomeGrupo);
+            } else
+            {
+                grupo = new Grupo { nome = nomeGrupo };
+                grupos.Add(grupo);
+            }
+
+            var usuarioAtual = EncotnrarUsuario(usuario);
+
+            if (!grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
+            {
+                grupo.usuarios.Add(usuarioAtual);
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+        }
+
+        public ActionResult SairGrupo(string usuario, string senha, string nomeGrupo)
+        {
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var grupo = grupos.FirstOrDefault(c => c.nome == nomeGrupo);
+
+            if (grupo == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+            }
+
+            var usuarioAtual = EncotnrarUsuario(usuario);
+
+            if (!grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
+            {
+                grupo.usuarios.Remove(usuarioAtual);
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+        }
+
+        public ActionResult EnviarMensagemGrupo(string usuario,string senha,string destinatario,string mensagem)
+        {
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var grupo = grupos.FirstOrDefault(c => c.nome == destinatario);
+
+            if (grupo == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            }
+
+            grupo.usuarios.ForEach(c => c.ReceberMensagem(new Mensagem(mensagem, usuario, destinatario, true)));
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+        }
+
+        public ActionResult Grupos(string usuario,string senha)
+        {
+            if (!Autenticar(usuario, senha))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var resultado = new Dictionary<string, bool>();
+            foreach(var grupo in grupos)
+            {
+                resultado.Add(grupo.nome, grupo.usuarios.Exists(c => c.nome == usuario));
+            }
+
+            return Json(resultado);
+        }
+
     }
 }
