@@ -334,6 +334,7 @@ namespace Cliente.Formularios
                         }
                     }
 
+                    //Se o grupo está na lista de grupos, mas nao no servidor, remover botao e remover da lista de grupos
                     foreach(var grupoRemovido in dadosGrupo.Where(c => !gruposExistentes.Contains(c.Key)).ToList())
                     {
                         splitContainer1.Panel1.Controls.Remove(splitContainer1.Panel1.Controls.OfType<Button>().Where(c => c.Text == grupoRemovido.Key).FirstOrDefault());
@@ -421,6 +422,7 @@ namespace Cliente.Formularios
 
                 if (resposta.IsSuccessStatusCode)
                 {
+                    //Remover destinatario atual, se for o grupo (geralmente é)
                     if (DestinatarioAtual == nomeGrupo)
                     {
                         DestinatarioAtual = "";
@@ -440,6 +442,7 @@ namespace Cliente.Formularios
             return dicionario;
         }
 
+        //Enviar mensagem
         private async void btnEnviar_Click(object sender, EventArgs e)
         {
             if (txtMensagem.Text != "" && DestinatarioAtual != "")
@@ -500,6 +503,7 @@ namespace Cliente.Formularios
             {
                 var resposta = await client.PostAsync(url, conteudo);
 
+                //Se sucesso, marcar grupo como destinatario atual, atualizar botoes e historico
                 if (resposta.IsSuccessStatusCode)
                 {
                     dadosGrupo[nomeGrupo] = true;
@@ -515,6 +519,11 @@ namespace Cliente.Formularios
             {
                 return false;
             }
+        }
+
+        private void txtHistorico_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

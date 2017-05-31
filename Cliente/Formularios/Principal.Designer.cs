@@ -115,6 +115,7 @@
             this.txtHistorico.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtHistorico.Size = new System.Drawing.Size(474, 484);
             this.txtHistorico.TabIndex = 2;
+            this.txtHistorico.TextChanged += new System.EventHandler(this.txtHistorico_TextChanged);
             // 
             // btnEnviar
             // 

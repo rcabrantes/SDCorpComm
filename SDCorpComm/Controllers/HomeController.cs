@@ -207,11 +207,15 @@ namespace SDCorpComm.Controllers
 
 
             Grupo grupo;
+
+            //Grupo existe e nao foi fechado?
             if (grupos.Exists(c => c.nome == nomeGrupo && !c.fechado))
             {
                 grupo = grupos.FirstOrDefault(c => c.nome == nomeGrupo);
             } else
             {
+
+                //Grupo nao existe, criar um novo
                 grupo = new Grupo { nome = nomeGrupo };
                 grupos.Add(grupo);
             }
@@ -220,6 +224,7 @@ namespace SDCorpComm.Controllers
 
             if (!grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
             {
+                //Colocar usuario no grupo
                 grupo.usuarios.Add(usuarioAtual);
             }
 
@@ -238,6 +243,7 @@ namespace SDCorpComm.Controllers
 
             if (grupo == null)
             {
+                //Grupo nao existe...
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
 
             }
@@ -246,9 +252,11 @@ namespace SDCorpComm.Controllers
 
             if (grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
             {
+                //Remover usuario
                 grupo.usuarios.Remove(usuarioAtual);
                 if (grupo.usuarios.Count == 0)
                 {
+                    //Se zero usuarios, fechar grupo
                     grupo.fechado = true;
                 }
             }
@@ -272,6 +280,7 @@ namespace SDCorpComm.Controllers
 
             }
 
+            //Enviar mensagem para cada usuario
             grupo.usuarios.ForEach(c => c.ReceberMensagem(new Mensagem(mensagem, usuario, destinatario, true)));
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
@@ -285,6 +294,7 @@ namespace SDCorpComm.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
+            //Lista de grupos a retornar, menos os que estao fechados
             var resultado = new Dictionary<string, bool>();
             foreach(var grupo in grupos.Where(c=>!c.fechado))
             {
