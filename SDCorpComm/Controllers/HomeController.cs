@@ -183,6 +183,7 @@ namespace SDCorpComm.Controllers
 
             }
 
+            //Preparar lista de ack e enviar para o objeto dispositivo
             var ackLista = acks.Split(',').ToList();
             disp.ProcessarAcks(ackLista.Select(c=>int.Parse(c)));
 

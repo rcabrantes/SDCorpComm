@@ -205,7 +205,8 @@ namespace Cliente.Formularios
                     if (await EnviarAcks(mensagensJson))
                     {
                         //Após sucesso do envio de acks, salvar mensagens na fila
-                        mensagens.AddRange(novasMensagens);
+                        //Verificar acks novamente, pois entre a hora que os acks foram enviados e agora, pode ter ocorrido envio de mais mensagens
+                        mensagens.AddRange(novasMensagens.Where(c=>!acksEnviados.Contains(c.id)));
 
 
                         //Exibit historico com novas mensagens
@@ -310,14 +311,15 @@ namespace Cliente.Formularios
 
             var conteudo = new FormUrlEncodedContent(valores);
 
-            var resposta = await client.PostAsync(url, conteudo);
+            try
+            {
+                var resposta = await client.PostAsync(url, conteudo);
 
             if (resposta.IsSuccessStatusCode)
             {
 
                 var dados = (JObject)JsonConvert.DeserializeObject(await resposta.Content.ReadAsStringAsync());
-                try
-                {
+                
                     //Armazena grupos existentes, para remover os botoes dos grupos que foram removidos
                     var gruposExistentes = new List<string>();
 
@@ -338,9 +340,10 @@ namespace Cliente.Formularios
                     }
 
                     CriarBotoesGrupos();
-                }
-                catch { }
+                
             }
+            }
+            catch { }
         }
 
         //Cria botoes de grupos e atualisa as cores
@@ -411,18 +414,22 @@ namespace Cliente.Formularios
 
             var conteudo = new FormUrlEncodedContent(AdicionarCredenciais(valores));
 
-            var resposta = await client.PostAsync(url, conteudo);
-
-            if (resposta.IsSuccessStatusCode)
+            try
             {
-                if (DestinatarioAtual == nomeGrupo)
+                var resposta = await client.PostAsync(url, conteudo);
+
+                if (resposta.IsSuccessStatusCode)
                 {
-                    DestinatarioAtual = "";
-                    dadosGrupo[nomeGrupo] = false;
-                    CriarBotoesGrupos();
-                    ExibirHistorico();
+                    if (DestinatarioAtual == nomeGrupo)
+                    {
+                        DestinatarioAtual = "";
+                        dadosGrupo[nomeGrupo] = false;
+                        CriarBotoesGrupos();
+                        ExibirHistorico();
+                    }
                 }
             }
+            catch { }
         }
 
         private Dictionary<string, string> AdicionarCredenciais(Dictionary<string, string> dicionario)
@@ -445,15 +452,18 @@ namespace Cliente.Formularios
                     {"destinatario", DestinatarioAtual } };
 
 
-
-                var conteudo = new FormUrlEncodedContent(AdicionarCredenciais(mensagem));
-
-                var resposta = await client.PostAsync(url, conteudo);
-
-                if (!resposta.IsSuccessStatusCode)
+                try
                 {
-                    MessageBox.Show("Erro ao enviar mensagem.");
+                    var conteudo = new FormUrlEncodedContent(AdicionarCredenciais(mensagem));
+
+                    var resposta = await client.PostAsync(url, conteudo);
+
+                    if (!resposta.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Erro ao enviar mensagem.");
+                    }
                 }
+                catch { }
             }
         }
 
@@ -482,19 +492,25 @@ namespace Cliente.Formularios
 
             var conteudo = new FormUrlEncodedContent(AdicionarCredenciais(valores));
 
-            var resposta = await client.PostAsync(url, conteudo);
-
-            if (resposta.IsSuccessStatusCode)
+            try
             {
-                dadosGrupo[nomeGrupo] = true;
-                DestinatarioAtual = nomeGrupo;
-                EnviarParaGrupo = true;
-                CriarBotoesGrupos();
-                ExibirHistorico();
+                var resposta = await client.PostAsync(url, conteudo);
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    dadosGrupo[nomeGrupo] = true;
+                    DestinatarioAtual = nomeGrupo;
+                    EnviarParaGrupo = true;
+                    CriarBotoesGrupos();
+                    ExibirHistorico();
+                }
+
+                return (resposta.IsSuccessStatusCode);
             }
-
-            return (resposta.IsSuccessStatusCode);
-
+            catch
+            {
+                return false;
+            }
         }
     }
 }
