@@ -201,13 +201,14 @@ namespace Cliente.Formularios
                         return;
                     }
 
+                    var acksEnviadosAgora = await EnviarAcks(mensagensJson);
                     //Enviar acks para novas mensagens
-                    if (await EnviarAcks(mensagensJson))
+                    if (acksEnviadosAgora != null)
                     {
                         //Após sucesso do envio de acks, salvar mensagens na fila
                         //Verificar acks novamente, pois entre a hora que os acks foram enviados e agora, pode ter ocorrido envio de mais mensagens
                         mensagens.AddRange(novasMensagens.Where(c=>!acksEnviados.Contains(c.id)));
-
+                        acksEnviados.AddRange(acksEnviadosAgora);
 
                         //Exibit historico com novas mensagens
                         ExibirHistorico();
@@ -221,7 +222,7 @@ namespace Cliente.Formularios
         }
 
         //Enviar acks, e retornar verdadeiro ou false se sucesso
-        private async Task<bool> EnviarAcks(string mensagensJson)
+        private async Task<List<string>> EnviarAcks(string mensagensJson)
         {
             var acks = new List<string>();
             try
@@ -248,19 +249,19 @@ namespace Cliente.Formularios
 
                 if (resposta.IsSuccessStatusCode)
                 {
-                    acksEnviados.AddRange(acks);
-                    return true;
+                    
+                    return (acks); ;
                 }
                 else
                 {
-                    return false;
+                    return null;
                 }
 
 
             }
             catch
             {
-                return false;
+                return null;
             }
         }
 
@@ -461,6 +462,9 @@ namespace Cliente.Formularios
                     if (!resposta.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Erro ao enviar mensagem.");
+                    } else
+                    {
+                        txtMensagem.Text = "";
                     }
                 }
                 catch { }
