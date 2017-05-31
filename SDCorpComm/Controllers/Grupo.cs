@@ -8,6 +8,8 @@ namespace SDCorpComm.Controllers
 {
     public class Grupo
     {
+        internal bool fechado;
+
         public string nome { get; set; }
 
         public List<Usuario> usuarios { get; set; } = new List<Usuario>();

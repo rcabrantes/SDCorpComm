@@ -19,19 +19,20 @@ namespace SDCorpComm.Controllers
             return Content("Hello back");
         }
 
-
+        //Verifica se as credenciais utilizadas sao validas
         private bool Autenticar(string usuario,string senha)
         {
             return (usuarios.Exists(c => c.nome == usuario && c.senha == senha));
 
         }
 
+        //Acha o objeto do usuario
         private Usuario EncotnrarUsuario(string usuario)
         {
             return usuarios.FirstOrDefault(c => c.nome == usuario);
         }
 
-
+        //Verifica credenciais do admin
         private bool AutenticarAdmin(string usuario,string senha)
         {
             if (usuario == "rsinohara" && senha == "asdf")
@@ -43,14 +44,18 @@ namespace SDCorpComm.Controllers
         }
 
 
+        //Faz login, retornando o estado
         public ActionResult Login(string usuario,string senha)
         {
+
+            //Credenciais do admin?
             if (AutenticarAdmin(usuario,senha))
             {
                 return Content("Admin");
             }
             else if (Autenticar(usuario, senha))
             {
+                //Credenciais válidas, associar um dispositivo e enviar lista de usuarios
                 var usuarioAtual = EncotnrarUsuario(usuario);
                 var dispositivo = new Dispositivo(usuarioAtual);
 
@@ -68,21 +73,38 @@ namespace SDCorpComm.Controllers
             }
         }
 
+        //Criar novo usuario
         public ActionResult Novo(string adminUsuario, string adminSenha,string novoNome, string novoSenha)
         {
+            //Credenciais de admin?
             if (!AutenticarAdmin(adminUsuario, adminSenha))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
+            if (usuarios.Exists(c => c.nome == novoNome))
+            {
+                //Deu nao, já tem usuario com esse nome
+                return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+            }
+
+            if (grupos.Exists(c => c.nome == novoNome))
+            {
+                //Tambem nao pode, tem um grupo com esse nome.... mas mensagens iam ficar confusas
+                //(Destinatario tem que ser unico)
+                return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+            }
+
             var novoUsuario = new Usuario(novoNome, novoSenha);
             usuarios.Add(novoUsuario);
 
+            //Deu certo véi, vai na fé
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
 
-
+        //Receber lista de usuarios. Envia a lista de usuarios, com todos os usuarios que estao na lista de usuarios.
+        //Usuarios.
         public ActionResult Usuarios(string usuario, string senha)
         {
             if (!Autenticar(usuario, senha))
@@ -93,23 +115,27 @@ namespace SDCorpComm.Controllers
             return Json(usuarios.Select(c => c.nome));
         }
         
+        //Enviar mensagem para um unico destinatario (nao grupo)
         public ActionResult EnviarUnico(string mensagem, string remetente,string destinatario,string usuario, string senha)
         {
             if (!Autenticar(usuario, senha))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
+
             var msg = new Mensagem(mensagem, remetente, destinatario);
 
             var usuarioDestino = EncotnrarUsuario(destinatario);
             var usuarioRemetente = EncotnrarUsuario(remetente);
 
+            //Xii, nao achou usuario.
             if(usuarioDestino==null || usuarioRemetente == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
             }
 
+            //Fechou, todo mundo recebe as mensagens
             usuarioRemetente.ReceberMensagem(msg);
             usuarioDestino.ReceberMensagem(msg);
 
@@ -118,6 +144,8 @@ namespace SDCorpComm.Controllers
 
         }
 
+
+        //Dispositivo quer receber mensagens
         public ActionResult ReceberMensagens(string dispositivo,string usuario, string senha)
         {
             if (!Autenticar(usuario, senha))
@@ -133,11 +161,13 @@ namespace SDCorpComm.Controllers
 
             }
 
+            //Pegar mensagem do dispositivo e enviar pro cliente.
             var mensagens = disp.MensagensNaFila();
             var result = Json(mensagens);
             return result;
         }
 
+        //Cliente envia ack para o servidor
         public ActionResult Acks(string usuario, string senha, string dispositivo,string acks)
         {
             if (!Autenticar(usuario, senha))
@@ -167,8 +197,16 @@ namespace SDCorpComm.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
+            //Se o grupo existir mas foi fechado, cancelar ingresso ou criacao
+            if (grupos.Exists(c => c.nome == nomeGrupo && c.fechado))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+
+            }
+
+
             Grupo grupo;
-            if (grupos.Exists(c => c.nome == nomeGrupo))
+            if (grupos.Exists(c => c.nome == nomeGrupo && !c.fechado))
             {
                 grupo = grupos.FirstOrDefault(c => c.nome == nomeGrupo);
             } else
@@ -205,9 +243,13 @@ namespace SDCorpComm.Controllers
 
             var usuarioAtual = EncotnrarUsuario(usuario);
 
-            if (!grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
+            if (grupo.usuarios.Exists(c => c.nome == usuarioAtual.nome))
             {
                 grupo.usuarios.Remove(usuarioAtual);
+                if (grupo.usuarios.Count == 0)
+                {
+                    grupo.fechado = true;
+                }
             }
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
@@ -221,7 +263,7 @@ namespace SDCorpComm.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
-            var grupo = grupos.FirstOrDefault(c => c.nome == destinatario);
+            var grupo = grupos.FirstOrDefault(c => c.nome == destinatario && !c.fechado);
 
             if (grupo == null)
             {
@@ -243,7 +285,7 @@ namespace SDCorpComm.Controllers
             }
 
             var resultado = new Dictionary<string, bool>();
-            foreach(var grupo in grupos)
+            foreach(var grupo in grupos.Where(c=>!c.fechado))
             {
                 resultado.Add(grupo.nome, grupo.usuarios.Exists(c => c.nome == usuario));
             }

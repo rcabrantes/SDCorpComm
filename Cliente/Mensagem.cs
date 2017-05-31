@@ -9,19 +9,18 @@ namespace Cliente
     public class Mensagem
     {
 
-        private static int quantidade = 0;
 
-        public int id;
+        public string id;
 
         public string mensagem;
         public string remetente;
         public string destinatario;
         public bool paraGrupo;
 
-        public Mensagem(string _mensagem, string _remetente, string _destinatario, bool _paraGrupo = false)
+        public Mensagem(string _id, string _mensagem, string _remetente, string _destinatario, bool _paraGrupo = false)
         {
             mensagem = _mensagem;
-            id = quantidade++;
+            id = _id;
             destinatario = _destinatario;
             paraGrupo = _paraGrupo;
             remetente = _remetente;

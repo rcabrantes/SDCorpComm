@@ -15,10 +15,16 @@ namespace Cliente.Formularios
 {
     public partial class Principal : Form
     {
-
+        //Destinatario para o qual as mensagens serao enviadas. Pode ser um grupo
         private string _destinatarioAtual="";
 
+        //Flag se o destinatario é um grupo
+        private bool EnviarParaGrupo = false;
+
+        //Cliente HTTP para todos os requests
         private static readonly HttpClient client = new HttpClient();
+
+        //Set e get para destinatario atual, simplesmtente para exibirmos no topo do chat
         private string DestinatarioAtual
         {
             get
@@ -31,10 +37,14 @@ namespace Cliente.Formularios
                 lblDestinatario.Text = "Exibindo: " + (_destinatarioAtual == "" ? "nenhum." : _destinatarioAtual);
             }
         }
-        private bool EnviarParaGrupo = false;
 
+        //Mnsaagens armazenadas
         public List<Mensagem> mensagens = new List<Mensagem>();
+
+        //Acks enviados, assim evitamos receber mensagens repetidas.
         public List<string> acksEnviados = new List<string>();
+
+        //Informacoes sobre os grupos: <nome,ingressou no grupo>
         public Dictionary<string, bool> dadosGrupo = new Dictionary<string, bool>();
 
 
@@ -45,12 +55,16 @@ namespace Cliente.Formularios
             CriarBotoesUsuarios();
         }
 
+
+        //Cria botoes para os usuarios, baseado na lista de usuarios recebida pelo servidor
         public void CriarBotoesUsuarios()
         {
             foreach (var usuario in Global.usuarios)
             {
+                //Verifica se já existe um botao para esse usuario
                 if (splitContainer1.Panel1.Controls.OfType<Button>().Where(c => c.Text == usuario).Count() == 0)
                 {
+                    //Se nao existe, criar botao e associar clique
                     var botao = new Button { Text = usuario, Dock = DockStyle.Top };
                     botao.Click += CliqueBotaoUsuario;
                     splitContainer1.Panel1.Controls.Add(botao);
@@ -58,31 +72,41 @@ namespace Cliente.Formularios
             }
         }
 
+
         public void CliqueBotaoUsuario(object sender, System.EventArgs e)
         {
+            //Verificar se o clique foi feito em um botao
             if (!(sender.GetType() == typeof(Button)))
             {
                 return;
             }
 
+            //Limpa cores dos demais botoes, só esse vai ficar colorido
             ResetarBotoes();
 
+            //Converter o tipo para alterar as propriedades
             var botao = (Button)sender;
 
             botao.BackColor = Color.AliceBlue;
 
+            
             DestinatarioAtual = botao.Text;
             EnviarParaGrupo = false;
 
+            //Exibir historico da conversa com esse usuario
             ExibirHistorico();
 
         }
 
+
+        //Exibe a conversa com o destinatario atual, usuario ou grupo
         private void ExibirHistorico(bool paraGrupo = false)
         {
+            paraGrupo = paraGrupo || EnviarParaGrupo;
             txtHistorico.Clear();
             if (paraGrupo)
             {
+                //Encontrar mensagens para o grupo e exibi-las
                 foreach (var mensagem in mensagens.Where(c => c.destinatario == DestinatarioAtual))
                 {
                     txtHistorico.Text += Environment.NewLine + mensagem.remetente + ":" + mensagem.mensagem;
@@ -91,6 +115,7 @@ namespace Cliente.Formularios
             }
             else
             {
+                //Encontrar mensagens para o usuario ou mensagens privadas vindas do usuario, e exibi-las
                 foreach (var mensagem in mensagens.Where(c =>
                  c.remetente == DestinatarioAtual || (c.remetente == Global.UsuarioNome && c.destinatario == DestinatarioAtual)))
                 {
@@ -99,6 +124,7 @@ namespace Cliente.Formularios
             }
         }
 
+        //Limpa a cor dos botes. TODOS os botoes.
         private void ResetarBotoes()
         {
             foreach (var botao in splitContainer1.Panel1.Controls.OfType<Button>())
@@ -107,10 +133,13 @@ namespace Cliente.Formularios
             }
         }
 
+        //Ler usuarios no servidor
         private async void SincronizarUsuarios()
         {
+            //Url para buscar os dados
             string url = Global.Domain + "usuarios";
 
+            //valores para o post, nesse caso somente autenticacao
             var valores = new Dictionary<string, string>
             {
                 {"usuario",Global.UsuarioNome },
@@ -119,60 +148,84 @@ namespace Cliente.Formularios
 
             var conteudo = new FormUrlEncodedContent(valores);
 
-            var resposta = await client.PostAsync(url, conteudo);
-
-            if (resposta.IsSuccessStatusCode)
+            try
             {
-                var dados = (await resposta.Content.ReadAsStringAsync());
-                var usuariosJson = JArray.Parse(dados);
-                Global.usuarios = new List<string>();
-                foreach (var usuario in usuariosJson)
-                {
-                    Global.usuarios.Add(usuario.ToString());
-                }
+                //Ler resposta
+                var resposta = await client.PostAsync(url, conteudo);
 
-                CriarBotoesUsuarios();
-            }
+                //Sucesso? interpretar resposta e salvar lista de usuarios
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var dados = (await resposta.Content.ReadAsStringAsync());
+                    var usuariosJson = JArray.Parse(dados);
+                    Global.usuarios = new List<string>();
+                    foreach (var usuario in usuariosJson)
+                    {
+                        Global.usuarios.Add(usuario.ToString());
+                    }
+
+                    CriarBotoesUsuarios();
+                }
+            }catch{ }
         }
+
+        //Ler mensagens no servidor
         private async void LerMensagens()
         {
             string url = Global.Domain + "receberMensagens";
 
+            //Enviar o numero de dispositivo
             var valores = new Dictionary<string, string>
             {
                 {"dispositivo",Global.dispositivoID.ToString() }
             };
 
+            //Enviar dados, após acrescentar credenciais
             var conteudo = new FormUrlEncodedContent(AdicionarCredenciais(valores));
 
-            var resposta = await client.PostAsync(url, conteudo);
-
-            if (resposta.IsSuccessStatusCode)
+            try
             {
-                var mensagensJson = (await resposta.Content.ReadAsStringAsync());
+                var resposta = await client.PostAsync(url, conteudo);
 
-                var novasMensagens = ConverterMensagens(mensagensJson);
-
-                if (novasMensagens.Count == 0)
+                //Se sucesso, salvar mensagens e enviar acks
+                if (resposta.IsSuccessStatusCode)
                 {
-                    return;
-                }
+                    var mensagensJson = (await resposta.Content.ReadAsStringAsync());
 
-                if (await EnviarAcks(mensagensJson))
-                {
-                    mensagens.AddRange(novasMensagens);
+                    //Somenta avaliar mensagens que nao foram recebidas.
+                    var novasMensagens = ConverterMensagens(mensagensJson).Where(c => !acksEnviados.Contains(c.id)).ToList();
 
+                    //Sem novas mensagens, terminar aqui
+                    if (novasMensagens.Count() == 0)
+                    {
+                        return;
+                    }
+
+                    //Enviar acks para novas mensagens
+                    if (await EnviarAcks(mensagensJson))
+                    {
+                        //Após sucesso do envio de acks, salvar mensagens na fila
+                        mensagens.AddRange(novasMensagens);
+
+
+                        //Exibit historico com novas mensagens
+                        ExibirHistorico();
+                    }
+
+                   
                 }
-                ExibirHistorico();
             }
+            catch { }
 
         }
 
+        //Enviar acks, e retornar verdadeiro ou false se sucesso
         private async Task<bool> EnviarAcks(string mensagensJson)
         {
             var acks = new List<string>();
             try
             {
+                //As chaves do JSON sao os ids das mensagens, extrair esses
                 var dados = (JObject)JsonConvert.DeserializeObject(mensagensJson);
                 foreach (var mensagem in dados)
                 {
@@ -180,6 +233,7 @@ namespace Cliente.Formularios
                 }
 
 
+                //Enviar acks
                 string url = Global.Domain + "acks";
 
                 var valores = new Dictionary<string, string>{
@@ -209,16 +263,20 @@ namespace Cliente.Formularios
             }
         }
 
+        //Converte mensagens de JSON para o objeto mensagem
         private List<Mensagem> ConverterMensagens(string mensagensJson)
         {
             var mensagens = new List<Mensagem>();
 
             try
             {
+                //Ler JSON e adicionar mensagens
                 var dados = (JObject)JsonConvert.DeserializeObject(mensagensJson);
-                foreach (var mensagemJson in dados.Values())
+                foreach (var dadosJson in dados)
                 {
-                    mensagens.Add(new Mensagem(mensagemJson["mensagem"].ToString(),
+                    var mensagemJson = dadosJson.Value;
+                    mensagens.Add(new Mensagem(dadosJson.Key,
+                        mensagemJson["mensagem"].ToString(),
                         mensagemJson["remetente"].ToString(),
                         mensagemJson["destinatario"].ToString(),
                         bool.Parse(mensagemJson["paraGrupo"].ToString())));
@@ -260,14 +318,23 @@ namespace Cliente.Formularios
                 var dados = (JObject)JsonConvert.DeserializeObject(await resposta.Content.ReadAsStringAsync());
                 try
                 {
+                    //Armazena grupos existentes, para remover os botoes dos grupos que foram removidos
+                    var gruposExistentes = new List<string>();
 
                     Global.usuarios = new List<string>();
                     foreach (var grupo in dados)
                     {
+                        gruposExistentes.Add(grupo.Key.ToString());
                         if (!dadosGrupo.ContainsKey(grupo.Key.ToString()))
                         {
                             dadosGrupo.Add(grupo.Key.ToString(), bool.Parse(grupo.Value.ToString()));
                         }
+                    }
+
+                    foreach(var grupoRemovido in dadosGrupo.Where(c => !gruposExistentes.Contains(c.Key)).ToList())
+                    {
+                        splitContainer1.Panel1.Controls.Remove(splitContainer1.Panel1.Controls.OfType<Button>().Where(c => c.Text == grupoRemovido.Key).FirstOrDefault());
+                        dadosGrupo.Remove(grupoRemovido.Key);
                     }
 
                     CriarBotoesGrupos();
@@ -276,6 +343,7 @@ namespace Cliente.Formularios
             }
         }
 
+        //Cria botoes de grupos e atualisa as cores
         private void CriarBotoesGrupos()
         {
             foreach (var grupo in dadosGrupo)
@@ -291,6 +359,7 @@ namespace Cliente.Formularios
             }
         }
 
+        //Clique no botao de grupo: ingressa no grupo, escolhe grupo como destinatario atual, ou, se for o grupo atual, sai do grupo
         private void CliqueBotaoGrupo(object sender, EventArgs e)
         {
             if (sender.GetType() != typeof(Button))
@@ -421,6 +490,7 @@ namespace Cliente.Formularios
                 DestinatarioAtual = nomeGrupo;
                 EnviarParaGrupo = true;
                 CriarBotoesGrupos();
+                ExibirHistorico();
             }
 
             return (resposta.IsSuccessStatusCode);
